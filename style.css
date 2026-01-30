@@ -1,0 +1,81 @@
+/* =========================
+   GLOBAL RESET
+========================= */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden; /* ONE SCREEN ONLY */
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #05070f;
+  color: #eaf2ff;
+}
+
+/* =========================
+   THREE.JS CANVAS (DO NOT TOUCH LOGIC)
+========================= */
+#webgl {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* =========================
+   HERO IDENTITY PANEL (LEFT SIDE)
+========================= */
+#identity-panel {
+  position: fixed;
+  left: 6vw;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 5;
+  pointer-events: none;
+  user-select: none;
+}
+
+.identity-name {
+  font-size: 3.4rem;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  color: #eaf6ff;
+  text-shadow:
+    0 2px 32px rgba(120,170,255,0.45),
+    0 0 8px rgba(255,255,255,0.15);
+}
+
+.identity-title {
+  margin-top: 0.5rem;
+  font-size: 1.15rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #b6c7e6;
+  opacity: 0.7;
+  text-shadow: 0 1px 12px rgba(120,170,255,0.25);
+}
+
+/* =========================
+   CINEMATIC VIGNETTE
+========================= */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(0, 0, 0, 0) 58%,
+    rgba(6, 8, 20, 0.35) 100%
+  );
+}
