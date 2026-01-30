@@ -15,17 +15,31 @@
   <!-- THREE.JS CANVAS -->
   <canvas id="webgl"></canvas>
 
-  <!-- FIXED HERO IDENTITY (LEFT SIDE) -->
+  <!-- FIXED HERO IDENTITY -->
   <div id="identity-panel">
     <div class="identity-name">Anurag Sagar(PAS)</div>
     <div class="identity-title">AI Developer</div>
   </div>
 
-  <!-- THREE.JS CDN -->
+  <!-- THREE.JS -->
   <script src="https://unpkg.com/three@0.158.0/build/three.min.js"></script>
 
-  <!-- MAIN THREE.JS SCENE -->
+  <!-- MAIN SCENE -->
   <script src="./main.js"></script>
+
+  <!-- ✅ HERO REVEAL FIX (THE ONLY MISSING PIECE) -->
+  <script>
+    window.addEventListener("DOMContentLoaded", () => {
+      const hero = document.getElementById("identity-panel");
+      if (!hero) return;
+
+      requestAnimationFrame(() => {
+        hero.style.opacity = "1";
+        hero.style.filter = "blur(0)";
+        hero.style.transform = "translateY(-50%) translateZ(0) scale(1)";
+      });
+    });
+  </script>
 
 </body>
 </html>

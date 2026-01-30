@@ -1,4 +1,10 @@
 // ==========================
+// CINEMATIC INTRO STATE
+// ==========================
+let introTime = 0;
+const INTRO_DURATION = 4.5;
+
+// ==========================
 // AMBIENT SPACE SOUND
 // ==========================
 let audioStarted = false;
@@ -9,8 +15,7 @@ const listener = new THREE.AudioListener();
 // ==========================
 let scrollProgress = 0;
 window.addEventListener("scroll", () => {
-  const max =
-    document.documentElement.scrollHeight - window.innerHeight;
+  const max = document.documentElement.scrollHeight - window.innerHeight;
   scrollProgress = max > 0 ? window.scrollY / max : 0;
 });
 
@@ -26,6 +31,24 @@ window.addEventListener("mousemove", (e) => {
 
   targetCameraOffset.x = mouse.x * 0.2;
   targetCameraOffset.y = mouse.y * 0.15;
+});
+
+// ==========================
+// HERO TEXT PARALLAX (FIXED)
+// ==========================
+const identityPanel = document.getElementById("identity-panel");
+
+window.addEventListener("mousemove", () => {
+  if (!identityPanel) return;
+
+  identityPanel.style.transform = `
+    translateY(-50%)
+    translateX(${targetCameraOffset.x * 18}px)
+    translateY(${targetCameraOffset.y * 12}px)
+    translateZ(${targetCameraOffset.x * -30}px)
+    rotateY(${targetCameraOffset.x * 2.2}deg)
+    rotateX(${targetCameraOffset.y * -1.6}deg)
+  `;
 });
 
 // ==========================
@@ -66,8 +89,10 @@ renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 scene.add(new THREE.AmbientLight(0x111122, 0.2));
 
 const sunLight = new THREE.DirectionalLight(0xffffff, 2.5);
-sunLight.position.set(10, 5, 5);
+sunLight.position.set(8, 4, 6);
 sunLight.castShadow = true;
+sunLight.shadow.radius = 6;
+sunLight.shadow.bias = -0.0005;
 sunLight.shadow.mapSize.set(2048, 2048);
 scene.add(sunLight);
 
@@ -99,7 +124,7 @@ const earthGroup = new THREE.Group();
 earthGroup.position.x = -1.6;
 scene.add(earthGroup);
 
-// Earth
+
 const earth = new THREE.Mesh(
   new THREE.SphereGeometry(1.6, 64, 64),
   new THREE.MeshStandardMaterial({
@@ -113,7 +138,7 @@ earth.castShadow = true;
 earth.receiveShadow = true;
 earthGroup.add(earth);
 
-// Clouds
+
 const clouds = new THREE.Mesh(
   new THREE.SphereGeometry(1.63, 64, 64),
   new THREE.MeshStandardMaterial({
@@ -126,18 +151,21 @@ const clouds = new THREE.Mesh(
 );
 earthGroup.add(clouds);
 
-// Atmosphere
+
 const atmosphere = new THREE.Mesh(
   new THREE.SphereGeometry(1.75, 64, 64),
   new THREE.MeshBasicMaterial({
     color: 0x3a7cbd,
     transparent: true,
-    opacity: 0.1,
+    opacity: 0.14,
     side: THREE.BackSide,
     blending: THREE.AdditiveBlending
   })
 );
 earthGroup.add(atmosphere);
+
+// 🔧 FIX: baseAtmosphere was missing
+const baseAtmosphere = 0.12;
 
 // ==========================
 // MOON
@@ -155,14 +183,16 @@ const moon = new THREE.Mesh(
     shininess: 8
   })
 );
-moon.position.set(3.8, 0, 0);
+
+// 🔧 FIX: prevent near-plane clipping
+moon.position.set(-3.6, 1.05, -0.4);
 moon.castShadow = true;
 moon.receiveShadow = true;
-moonPivot.rotation.z = 0.2;
+moonPivot.rotation.z = 0.0036;
 moonPivot.add(moon);
 
 // ==========================
-// STARFIELD (BASE)
+// STARFIELD
 // ==========================
 const starsGroup = new THREE.Group();
 scene.add(starsGroup);
@@ -202,13 +232,10 @@ function createTwinklingStars(count, radius, size, opacity, c1, c2) {
   );
 }
 
-// Original stars
+
 starsGroup.add(createTwinklingStars(8000, 200, 0.05, 0.8, new THREE.Color(0xffffff), new THREE.Color(0x88bbff)));
 starsGroup.add(createTwinklingStars(5000, 350, 0.08, 0.4, new THREE.Color(0xffeedd), new THREE.Color(0x99aaff)));
-
-// EXTRA stars (added)
-starsGroup.add(createTwinklingStars(9000, 450, 0.055, 0.35, new THREE.Color(0xfff2dd), new THREE.Color(0xaaccff)));
-starsGroup.add(createTwinklingStars(12000, 600, 0.035, 0.18, new THREE.Color(0x8899ff), new THREE.Color(0xffffff)));
+starsGroup.add(createTwinklingStars(9000, 450, 0.055, 0.35, new THREE.Color(0xfff2dd), new THREE.Color(0xaaccff)));starsGroup.add(createTwinklingStars(12000, 600, 0.035, 0.18, new THREE.Color(0x8899ff), new THREE.Color(0xffffff)));
 
 const parallaxStars = [
   { obj: starsGroup.children[0], factor: 0.8 },
@@ -243,8 +270,12 @@ function animate() {
   earth.rotation.y += 0.0008;
   clouds.rotation.y += 0.0011;
 
-  moonPivot.rotation.y += 0.002;
-  moon.rotation.y += 0.001;
+  introTime += 0.016;
+  const introProgress = Math.min(introTime / INTRO_DURATION, 1);
+  const easeOut = 1 - Math.pow(1 - introProgress, 3);
+
+  moonPivot.rotation.y += 0.0006 + easeOut * 0.0021;
+  moon.rotation.y += 0.0009;
 
   starsGroup.rotation.y -= 0.0001;
   nebula.rotation.z += 0.00005;
@@ -258,13 +289,16 @@ function animate() {
   camera.position.x = Math.sin(cameraAngle) * 0.3 + targetCameraOffset.x;
   camera.position.y = Math.cos(cameraAngle * 0.8) * 0.2 + targetCameraOffset.y;
 
-  const zTarget = 7.5 - scrollProgress * 3;
+  // 🔧 FIX: safe camera Z clamp
+  const zTarget = Math.max(6.2, 7.5 - scrollProgress * 3);
   camera.position.z += (zTarget - camera.position.z) * 0.05;
 
-  camera.lookAt(-0.5, 0, 0);
+  camera.lookAt(-0.6, 0.05, 0);
 
   pulseTime += 0.012;
-  atmosphere.material.opacity = 0.1 + Math.sin(pulseTime) * 0.03;
+  atmosphere.material.opacity =
+    baseAtmosphere +
+    (1 - sunLight.position.clone().normalize().dot(new THREE.Vector3(0,0,1))) * 0.04;
 
   renderer.render(scene, camera);
 }

@@ -18,7 +18,7 @@ body {
 }
 
 /* =========================
-   THREE.JS CANVAS (DO NOT TOUCH LOGIC)
+   THREE.JS CANVAS
 ========================= */
 #webgl {
   position: fixed;
@@ -27,42 +27,6 @@ body {
   height: 100vh;
   z-index: 0;
   pointer-events: none;
-}
-
-/* =========================
-   FIXED HERO IDENTITY (RIGHT)
-========================= */
-
-#identity-panel {
-  position: fixed;
-  right: 6vw;              /* 👈 moved to right */
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 5;
-  pointer-events: none;
-  user-select: none;
-  text-align: right;       /* 👈 align text to right */
-}
-
-.identity-name {
-  font-size: clamp(2.8rem, 4vw, 4.2rem);
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  color: #eaf6ff;
-  margin: 0;
-  line-height: 1.05;
-  text-shadow:
-    0 0 12px rgba(110, 140, 255, 0.25),
-    0 0 32px rgba(80, 120, 255, 0.35);
-}
-
-.identity-title {
-  margin-top: 0.6rem;
-  font-size: 1.1rem;
-  letter-spacing: 0.28em;
-  text-transform: uppercase;
-  color: #b6c7e6;
-  opacity: 0.75;
 }
 
 /* =========================
@@ -79,4 +43,111 @@ body::after {
     rgba(0, 0, 0, 0) 58%,
     rgba(6, 8, 20, 0.35) 100%
   );
+}
+
+/* =========================
+   HERO IDENTITY (RIGHT SIDE)
+========================= */
+#identity-panel {
+  position: fixed;
+  right: 4vw;
+  top: 50%;
+  transform:
+    translateY(-50%)
+    translateZ(-600px)
+    scale(0.85);
+
+  z-index: 10;
+  pointer-events: none;
+  text-align: right;
+
+  opacity: 0;
+  filter: blur(12px);
+
+  transition:
+    opacity 1.4s cubic-bezier(.4,0,.2,1),
+    transform 1.8s cubic-bezier(.2,.8,.2,1),
+    filter 1.6s ease;
+}
+
+/* ✅ VISIBLE STATE (THIS WAS MISSING) */
+#identity-panel.visible {
+  opacity: 1;
+  filter: blur(0);
+  transform:
+    translateY(-50%)
+    translateZ(0)
+    scale(1);
+}
+
+/* =========================
+   NAME
+========================= */
+.identity-name {
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: clamp(3rem, 4.5vw, 5rem);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+  color: #ffffff;
+
+  /* TRUE 3D DEPTH STACK */
+  text-shadow:
+    0 1px 0 rgba(255,255,255,0.35),
+    0 2px 0 rgba(200,210,255,0.28),
+    0 4px 6px rgba(0,0,0,0.35),
+    0 12px 24px rgba(20,40,120,0.45),
+    0 40px 80px rgba(30,60,180,0.25);
+
+  transform-style: preserve-3d;
+  will-change: transform, opacity;
+}
+
+/* =========================
+   TITLE
+========================= */
+.identity-title {
+  margin-top: 0.7rem;
+  font-size: clamp(1rem, 1.3vw, 1.5rem);
+  font-weight: 500;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+
+  color: rgba(180,200,255,0.8);
+
+  text-shadow:
+    0 0 8px rgba(120,170,255,0.25),
+    0 0 22px rgba(80,120,255,0.15);
+}
+
+/* =========================
+   MOBILE HERO FIX
+========================= */
+@media (max-width: 768px) {
+  #identity-panel {
+    right: 50%;
+    top: auto;
+    bottom: 10vh;
+    transform:
+      translateX(50%)
+      translateZ(0)
+      scale(0.9);
+    text-align: center;
+  }
+
+  .identity-name {
+    font-size: 2.2rem;
+    line-height: 1.1;
+  }
+
+  .identity-title {
+    font-size: 0.95rem;
+    letter-spacing: 0.14em;
+  }
+
+  .identity-name {
+  text-shadow:
+    0 2px 6px rgba(0,0,0,0.45),
+    0 16px 32px rgba(40,80,200,0.25);
+  }
 }
