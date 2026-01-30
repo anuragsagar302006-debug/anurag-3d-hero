@@ -30,38 +30,39 @@ body {
 }
 
 /* =========================
-   HERO IDENTITY PANEL (LEFT SIDE)
+   FIXED HERO IDENTITY (RIGHT)
 ========================= */
+
 #identity-panel {
   position: fixed;
-  left: 6vw;
+  right: 6vw;              /* 👈 moved to right */
   top: 50%;
   transform: translateY(-50%);
   z-index: 5;
   pointer-events: none;
   user-select: none;
+  text-align: right;       /* 👈 align text to right */
 }
 
 .identity-name {
-  font-size: 3.4rem;
-  font-weight: 900;
+  font-size: clamp(2.8rem, 4vw, 4.2rem);
+  font-weight: 800;
   letter-spacing: -0.03em;
-  line-height: 1.05;
   color: #eaf6ff;
+  margin: 0;
+  line-height: 1.05;
   text-shadow:
-    0 2px 32px rgba(120,170,255,0.45),
-    0 0 8px rgba(255,255,255,0.15);
+    0 0 12px rgba(110, 140, 255, 0.25),
+    0 0 32px rgba(80, 120, 255, 0.35);
 }
 
 .identity-title {
-  margin-top: 0.5rem;
-  font-size: 1.15rem;
-  font-weight: 500;
-  letter-spacing: 0.22em;
+  margin-top: 0.6rem;
+  font-size: 1.1rem;
+  letter-spacing: 0.28em;
   text-transform: uppercase;
   color: #b6c7e6;
-  opacity: 0.7;
-  text-shadow: 0 1px 12px rgba(120,170,255,0.25);
+  opacity: 0.75;
 }
 
 /* =========================
